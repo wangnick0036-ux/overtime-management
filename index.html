@@ -1103,8 +1103,7 @@
 
                 if (isAM) recordValue += 'AM' + formattedDate;
                 if (isPM) {
-                    if (recordValue) recordValue += '
-';
+                    if (recordValue) recordValue +='\n';  //  
                     recordValue += 'PM' + formattedDate;
                 }
 
