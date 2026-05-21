@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>加班管理系统 - Google Sheets 集成版</title>
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://accounts.google.com/gsi/client"></script>
+    <title>加班管理系统</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +12,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -25,170 +23,72 @@
             margin: 0 auto;
         }
 
-        /* 头部样式 */
         .header {
-            background: white;
-            border-radius: 15px;
-            padding: 20px 30px;
+            text-align: center;
+            color: white;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
         .header h1 {
-            color: #667eea;
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
-        .connection-status {
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .status-connected {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-disconnected {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status-loading {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
             gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #667eea;
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .user-email {
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* 登录页面样式 */
-        .login-container {
-            max-width: 500px;
-            margin: 100px auto;
-            background: white;
-            border-radius: 20px;
-            padding: 50px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
-
-        .login-container h2 {
-            color: #667eea;
-            font-size: 32px;
-            margin-bottom: 20px;
-        }
-
-        .login-container p {
-            color: #666;
-            margin-bottom: 40px;
-            font-size: 16px;
-        }
-
-        .google-signin-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 32px;
-            background: white;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
             font-size: 16px;
             font-weight: 600;
-            color: #333;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        .google-signin-btn:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
             transform: translateY(-2px);
-            border-color: #667eea;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
 
-        .google-signin-btn:active {
-            transform: translateY(0);
+        .btn-success {
+            background: #10b981;
+            color: white;
         }
 
-        .google-icon {
-            width: 24px;
-            height: 24px;
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
         }
 
-        /* 调试日志样式 */
-        .debug-log {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            max-height: 300px;
-            overflow-y: auto;
-            text-align: left;
+        .btn-danger {
+            background: #ef4444;
+            color: white;
         }
 
-        .debug-log h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
         }
 
-        .debug-log-entry {
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            padding: 4px 0;
-            color: #333;
-        }
-
-        .debug-log-entry.success {
-            color: #28a745;
-        }
-
-        .debug-log-entry.error {
-            color: #dc3545;
-        }
-
-        .debug-log-entry.warning {
-            color: #ffc107;
-        }
-
-        /* 员工卡片网格 */
         .employee-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -199,129 +99,61 @@
         .employee-card {
             background: white;
             border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .employee-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
 
-        .employee-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+        .employee-card.empty {
+            background: rgba(255,255,255,0.1);
+            border: 2px dashed rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
         }
 
         .employee-name {
-            font-size: 22px;
-            font-weight: 700;
-            color: #333;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
             margin-bottom: 15px;
         }
 
         .employee-info {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 10px;
         }
 
         .info-label {
+            font-size: 0.9em;
             color: #666;
-            font-size: 14px;
+            margin-bottom: 5px;
         }
 
         .info-value {
+            font-size: 1.2em;
             font-weight: 600;
-            font-size: 16px;
+            color: #333;
         }
 
-        .days-remaining {
-            color: #28a745;
+        .info-value.good {
+            color: #10b981;
         }
 
-        .days-low {
-            color: #dc3545;
+        .info-value.warning {
+            color: #ef4444;
         }
 
-        .days-none {
+        .info-value.zero {
             color: #999;
         }
 
-        /* 按钮组 */
-        .button-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
-        }
-
-        .btn {
-            flex: 1;
-            min-width: 200px;
-            padding: 18px 30px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #a8a8a8 0%, #6c6c6c 100%);
-        }
-
-        .btn-logout {
-            padding: 10px 20px;
-            font-size: 14px;
-            min-width: auto;
-        }
-
-        /* 模态框 */
         .modal {
             display: none;
             position: fixed;
@@ -329,97 +161,59 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0,0,0,0.5);
             z-index: 1000;
-            animation: fadeIn 0.3s ease;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .modal.active {
+            display: flex;
         }
 
         .modal-content {
-            position: relative;
             background: white;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideDown 0.3s ease;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
         }
 
         .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .modal-title {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 1.8em;
+            font-weight: bold;
             color: #667eea;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 32px;
-            color: #999;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            line-height: 1;
-        }
-
-        .close-btn:hover {
-            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 8px;
             font-weight: 600;
             color: #333;
-            font-size: 14px;
+            margin-bottom: 8px;
         }
 
-        .form-input,
-        .form-select {
+        .form-input {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            font-family: inherit;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
         }
 
-        .form-input:focus,
-        .form-select:focus {
+        .form-input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .checkbox-group {
@@ -433,829 +227,606 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            font-size: 15px;
-            color: #333;
         }
 
-        .checkbox-label input[type="checkbox"] {
+        .checkbox-label input {
             width: 20px;
             height: 20px;
             cursor: pointer;
         }
 
-        .overtime-records {
-            max-height: 300px;
-            overflow-y: auto;
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
         }
 
-        .overtime-record {
-            padding: 12px;
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        .ot-record {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 10px;
             margin-bottom: 10px;
-            background: white;
-            border-radius: 8px;
             border-left: 4px solid #667eea;
         }
 
-        .overtime-record.expired {
-            border-left-color: #dc3545;
-            opacity: 0.6;
+        .ot-record.expired {
+            border-left-color: #ef4444;
+            opacity: 0.7;
         }
 
-        .overtime-record.expiring-soon {
-            border-left-color: #ffc107;
+        .ot-record.expiring-soon {
+            border-left-color: #f59e0b;
         }
 
-        .record-date {
+        .ot-record-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .ot-record-date {
             font-weight: 600;
             color: #333;
-            margin-bottom: 5px;
         }
 
-        .record-info {
-            font-size: 13px;
+        .ot-record-status {
+            font-size: 0.9em;
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: #e5e7eb;
             color: #666;
         }
 
-        .empty-state {
+        .ot-record-status.valid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .ot-record-status.expired {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .ot-record-status.expiring {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .ot-record-info {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .no-records {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px;
             color: #999;
+            font-size: 1.1em;
         }
 
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        /* 响应式设计 */
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                text-align: center;
+            .header h1 {
+                font-size: 1.8em;
             }
 
             .employee-grid {
                 grid-template-columns: 1fr;
             }
 
-            .button-group {
+            .controls {
                 flex-direction: column;
             }
 
             .btn {
-                min-width: 100%;
+                width: 100%;
             }
-
-            .modal-content {
-                margin: 20px;
-                padding: 25px;
-            }
-        }
-
-        .hidden {
-            display: none !important;
         }
     </style>
 </head>
 <body>
-    <!-- 登录页面 -->
-    <div id="loginPage" class="login-container">
-        <h2>🎯 加班管理系统</h2>
-        <p>请使用您的公司 Google 账号登录以访问系统</p>
-
-        <button id="googleSignInBtn" class="google-signin-btn">
-            <svg class="google-icon" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            使用 Google 账号登录
-        </button>
-
-        <!-- 调试日志 -->
-        <div class="debug-log">
-            <h3>📋 调试日志</h3>
-            <div id="debugLog"></div>
-        </div>
-    </div>
-
-    <!-- 主应用页面 -->
-    <div id="mainApp" class="container hidden">
-        <!-- 头部 -->
+    <div class="container">
         <div class="header">
-            <h1>🎯 加班管理系统</h1>
-            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                <div id="connectionStatus" class="connection-status status-loading">
-                    <span>⏳ 正在连接...</span>
-                </div>
-                <div id="userInfo" class="user-info hidden">
-                    <img id="userAvatar" class="user-avatar" src="" alt="用户头像">
-                    <div class="user-details">
-                        <div id="userName" class="user-name"></div>
-                        <div id="userEmail" class="user-email"></div>
-                    </div>
-                    <button id="logoutBtn" class="btn btn-secondary btn-logout">退出登录</button>
-                </div>
-            </div>
+            <h1>🏢 加班管理系统</h1>
+            <p>轻松管理团队加班与调休</p>
         </div>
 
-        <!-- 员工卡片 -->
-        <div id="employeeGrid" class="employee-grid">
-            <!-- 动态生成 -->
+        <div class="controls">
+            <button class="btn btn-primary" onclick="openAddEmployeeModal()">👤 人员录入</button>
+            <button class="btn btn-primary" onclick="openAddOTModal()">➕ 加班录入</button>
+            <button class="btn btn-primary" onclick="openLeaveModal()">🏖️ 调休申请</button>
+            <button class="btn btn-success" onclick="refreshData()">🔄 刷新数据</button>
+            <button class="btn btn-danger" onclick="clearAllData()">🗑️ 清空数据</button>
         </div>
 
-        <!-- 操作按钮 -->
-        <div class="button-group">
-            <button class="btn btn-success" onclick="showOvertimeModal()">➕ 加班录入</button>
-            <button class="btn btn-info" onclick="showLeaveModal()">🏖️ 调休申请</button>
-            <button class="btn btn-warning" onclick="refreshData()">🔄 刷新数据</button>
+        <div class="employee-grid" id="employeeGrid">
+            <!-- 员工卡片将动态生成 -->
         </div>
     </div>
 
-    <!-- 加班录入模态框 -->
-    <div id="overtimeModal" class="modal">
+    <!-- 人员录入弹窗 -->
+    <div class="modal" id="addEmployeeModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">➕ 加班录入</h2>
-                <button class="close-btn" onclick="closeModal('overtimeModal')">&times;</button>
+            <div class="modal-header">👤 添加员工</div>
+            <div class="form-group">
+                <label class="form-label">员工姓名</label>
+                <input type="text" class="form-input" id="employeeName" placeholder="请输入员工姓名">
             </div>
-            <form id="overtimeForm">
-                <div class="form-group">
-                    <label class="form-label">选择员工</label>
-                    <select id="overtimeEmployee" class="form-select" required>
-                        <option value="">请选择员工</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">加班日期</label>
-                    <input type="date" id="overtimeDate" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">加班时段</label>
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="overtimeAM" value="AM">
-                            上半天 (AM)
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="overtimePM" value="PM">
-                            下半天 (PM)
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">确认录入</button>
-            </form>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="addEmployee()">确认添加</button>
+                <button class="btn" style="background: #e5e7eb;" onclick="closeModal('addEmployeeModal')">取消</button>
+            </div>
         </div>
     </div>
 
-    <!-- 调休申请模态框 -->
-    <div id="leaveModal" class="modal">
+    <!-- 加班录入弹窗 -->
+    <div class="modal" id="addOTModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">🏖️ 调休申请</h2>
-                <button class="close-btn" onclick="closeModal('leaveModal')">&times;</button>
+            <div class="modal-header">➕ 加班录入</div>
+            <div class="form-group">
+                <label class="form-label">选择员工</label>
+                <select class="form-input" id="otEmployee">
+                    <option value="">请选择员工</option>
+                </select>
             </div>
-            <form id="leaveForm">
-                <div class="form-group">
-                    <label class="form-label">选择员工</label>
-                    <select id="leaveEmployee" class="form-select" required onchange="loadEmployeeOvertimeRecords()">
-                        <option value="">请选择员工</option>
-                    </select>
+            <div class="form-group">
+                <label class="form-label">加班日期</label>
+                <input type="date" class="form-input" id="otDate">
+            </div>
+            <div class="form-group">
+                <label class="form-label">加班时长</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="otAM">
+                        上半天 (0.5天)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="otPM">
+                        下半天 (0.5天)
+                    </label>
                 </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="addOT()">确认录入</button>
+                <button class="btn" style="background: #e5e7eb;" onclick="closeModal('addOTModal')">取消</button>
+            </div>
+        </div>
+    </div>
 
-                <div id="overtimeRecordsSection" class="hidden">
-                    <div class="form-group">
-                        <label class="form-label">该员工的加班记录</label>
-                        <div id="overtimeRecordsList" class="overtime-records">
-                            <!-- 动态生成 -->
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">调休日期</label>
-                        <input type="date" id="leaveDate" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">调休时段</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="leaveAM" value="AM">
-                                上半天 (AM)
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="leavePM" value="PM">
-                                下半天 (PM)
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">备注（可选）</label>
-                        <input type="text" id="leaveRemark" class="form-input" placeholder="请输入备注信息">
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">确认申请</button>
+    <!-- 调休申请弹窗 -->
+    <div class="modal" id="leaveModal">
+        <div class="modal-content">
+            <div class="modal-header">🏖️ 调休申请</div>
+            <div class="form-group">
+                <label class="form-label">选择员工</label>
+                <select class="form-input" id="leaveEmployee" onchange="loadEmployeeOTRecords()">
+                    <option value="">请选择员工</option>
+                </select>
+            </div>
+            <div id="otRecordsList"></div>
+            <div class="form-group">
+                <label class="form-label">调休日期</label>
+                <input type="date" class="form-input" id="leaveDate">
+            </div>
+            <div class="form-group">
+                <label class="form-label">调休时长</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="leaveAM">
+                        上半天 (0.5天)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="leavePM">
+                        下半天 (0.5天)
+                    </label>
                 </div>
-            </form>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="applyLeave()">确认申请</button>
+                <button class="btn" style="background: #e5e7eb;" onclick="closeModal('leaveModal')">取消</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // ==================== 配置 ====================
-        const CONFIG = {
-            SPREADSHEET_ID: '1NlbxM1z02IGOEhkHFoqoiGEb_Uo9lwaupaRZSk-kOng',
-            CLIENT_ID: 'YOUR_OAUTH_CLIENT_ID_HERE', // 需要替换为您的 OAuth 客户端 ID
-            SCOPES: 'https://www.googleapis.com/auth/spreadsheets',
-            DISCOVERY_DOC: 'https://sheets.googleapis.com/$discovery/rest?version=v4',
-
-            // Sheet 名称
-            SHEETS: {
-                OT_RECORD: 'OT record',
-                COMPENSATORY: 'Compensatory time off'
-            },
-
-            // 员工列映射（B-G列对应6位员工）
-            EMPLOYEES: [
-                { name: 'Tommy', column: 'B' },
-                { name: 'Cindy', column: 'D' },
-                { name: 'Elaine', column: 'F' },
-                { name: 'Vincent', column: 'H' },
-                { name: 'Vic', column: 'J' },
-                { name: 'Nick', column: 'L' }
-            ]
+        // 数据存储键名
+        const STORAGE_KEYS = {
+            EMPLOYEES: 'ot_employees',
+            OT_RECORDS: 'ot_records',
+            LEAVE_RECORDS: 'leave_records'
         };
 
-        // ==================== 全局变量 ====================
-        let tokenClient;
-        let gapiInited = false;
-        let gisInited = false;
-        let accessToken = null;
-        let employeeData = [];
-
-        // ==================== 调试日志 ====================
-        function addDebugLog(message, type = 'info') {
-            const logDiv = document.getElementById('debugLog');
-            if (!logDiv) return;
-
-            const time = new Date().toLocaleTimeString();
-            const entry = document.createElement('div');
-            entry.className = `debug-log-entry ${type}`;
-            entry.textContent = `[${time}] ${message}`;
-            logDiv.appendChild(entry);
-            logDiv.scrollTop = logDiv.scrollHeight;
-
-            console.log(`[${type.toUpperCase()}] ${message}`);
-        }
-
-        // ==================== 初始化 ====================
+        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            addDebugLog('页面加载完成', 'info');
+            // 设置默认日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('otDate').value = today;
+            document.getElementById('leaveDate').value = today;
 
-            // 检查客户端 ID 配置
-            if (CONFIG.CLIENT_ID === 'YOUR_OAUTH_CLIENT_ID_HERE') {
-                addDebugLog('⚠️ 警告：请先配置 OAuth 客户端 ID！', 'warning');
-                alert('请先在代码中配置您的 OAuth 客户端 ID（第468行）');
-            }
-
-            // 绑定登录按钮
-            const loginBtn = document.getElementById('googleSignInBtn');
-            if (loginBtn) {
-                loginBtn.addEventListener('click', handleAuthClick);
-                addDebugLog('✅ 登录按钮事件已绑定', 'success');
-            } else {
-                addDebugLog('❌ 未找到登录按钮元素', 'error');
-            }
-
-            // 绑定退出按钮
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', handleSignoutClick);
-            }
-
-            // 绑定表单提交
-            document.getElementById('overtimeForm').addEventListener('submit', handleOvertimeSubmit);
-            document.getElementById('leaveForm').addEventListener('submit', handleLeaveSubmit);
-
-            // 加载 GAPI 和 GIS
-            loadGoogleAPIs();
+            // 加载数据
+            refreshData();
         });
 
-        // ==================== 加载 Google APIs ====================
-        function loadGoogleAPIs() {
-            addDebugLog('开始加载 Google APIs...', 'info');
-
-            // 加载 GAPI
-            if (typeof gapi !== 'undefined') {
-                addDebugLog('✅ GAPI 库加载成功', 'success');
-                gapiLoaded();
-            } else {
-                addDebugLog('❌ GAPI 库加载失败', 'error');
-            }
-
-            // 加载 GIS
-            if (typeof google !== 'undefined' && google.accounts) {
-                addDebugLog('✅ GIS 库加载成功', 'success');
-                gisLoaded();
-            } else {
-                addDebugLog('❌ GIS 库加载失败', 'error');
-            }
+        // 获取数据
+        function getData(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
         }
 
-        function gapiLoaded() {
-            addDebugLog('正在初始化 GAPI 客户端...', 'info');
-            gapi.load('client', async () => {
-                try {
-                    await gapi.client.init({
-                        discoveryDocs: [CONFIG.DISCOVERY_DOC],
-                    });
-                    gapiInited = true;
-                    addDebugLog('✅ GAPI 客户端初始化成功', 'success');
-                    maybeEnableButtons();
-                } catch (error) {
-                    addDebugLog(`❌ GAPI 初始化失败: ${error.message}`, 'error');
-                }
-            });
+        // 保存数据
+        function saveData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
         }
 
-        function gisLoaded() {
-            addDebugLog('正在初始化 GIS 客户端...', 'info');
-            try {
-                tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: CONFIG.CLIENT_ID,
-                    scope: CONFIG.SCOPES,
-                    callback: '', // 稍后定义
-                });
-                gisInited = true;
-                addDebugLog('✅ GIS 客户端初始化成功', 'success');
-                maybeEnableButtons();
-            } catch (error) {
-                addDebugLog(`❌ GIS 初始化失败: ${error.message}`, 'error');
-            }
+        // 计算日期差（天数）
+        function daysBetween(date1, date2) {
+            const oneDay = 24 * 60 * 60 * 1000;
+            return Math.round((date2 - date1) / oneDay);
         }
 
-        function maybeEnableButtons() {
-            if (gapiInited && gisInited) {
-                addDebugLog('✅ 所有库已就绪，登录按钮已激活', 'success');
-                document.getElementById('googleSignInBtn').disabled = false;
-            }
+        // 计算过期日期（6个月后）
+        function getExpiryDate(date) {
+            const d = new Date(date);
+            d.setMonth(d.getMonth() + 6);
+            return d;
         }
 
-        // ==================== 认证处理 ====================
-        function handleAuthClick() {
-            addDebugLog('用户点击了登录按钮', 'info');
-
-            if (!gapiInited || !gisInited) {
-                addDebugLog('❌ 库未初始化完成', 'error');
-                alert('系统正在初始化，请稍后再试');
-                return;
-            }
-
-            tokenClient.callback = async (resp) => {
-                if (resp.error !== undefined) {
-                    addDebugLog(`❌ 认证失败: ${resp.error}`, 'error');
-                    throw (resp);
-                }
-
-                addDebugLog('✅ 认证成功，获取 Access Token', 'success');
-                accessToken = gapi.client.getToken().access_token;
-
-                // 获取用户信息
-                await getUserInfo();
-
-                // 切换到主应用
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-
-                // 加载数据
-                await loadData();
-            };
-
-            if (gapi.client.getToken() === null) {
-                addDebugLog('请求新的 Access Token...', 'info');
-                tokenClient.requestAccessToken({prompt: 'consent'});
-            } else {
-                addDebugLog('请求新的 Access Token（静默）...', 'info');
-                tokenClient.requestAccessToken({prompt: ''});
-            }
+        // 检查是否过期
+        function isExpired(otDate) {
+            const expiryDate = getExpiryDate(new Date(otDate));
+            return new Date() > expiryDate;
         }
 
-        function handleSignoutClick() {
-            const token = gapi.client.getToken();
-            if (token !== null) {
-                google.accounts.oauth2.revoke(token.access_token);
-                gapi.client.setToken('');
-                accessToken = null;
-            }
-
-            // 切换回登录页面
-            document.getElementById('mainApp').classList.add('hidden');
-            document.getElementById('loginPage').classList.remove('hidden');
-            document.getElementById('userInfo').classList.add('hidden');
-
-            addDebugLog('✅ 已退出登录', 'success');
+        // 检查是否即将过期（30天内）
+        function isExpiringSoon(otDate) {
+            const expiryDate = getExpiryDate(new Date(otDate));
+            const daysUntilExpiry = daysBetween(new Date(), expiryDate);
+            return daysUntilExpiry > 0 && daysUntilExpiry <= 30;
         }
 
-        // ==================== 获取用户信息 ====================
-        async function getUserInfo() {
-            try {
-                const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
+        // 计算员工剩余假期
+        function calculateRemainingDays(employeeName) {
+            const otRecords = getData(STORAGE_KEYS.OT_RECORDS).filter(r => r.employee === employeeName);
+            const leaveRecords = getData(STORAGE_KEYS.LEAVE_RECORDS).filter(r => r.employee === employeeName);
 
-                const userInfo = await response.json();
+            let total = 0;
+            let validRecords = [];
 
-                document.getElementById('userName').textContent = userInfo.name;
-                document.getElementById('userEmail').textContent = userInfo.email;
-                document.getElementById('userAvatar').src = userInfo.picture;
-                document.getElementById('userInfo').classList.remove('hidden');
-
-                addDebugLog(`✅ 用户信息加载成功: ${userInfo.name}`, 'success');
-            } catch (error) {
-                addDebugLog(`❌ 获取用户信息失败: ${error.message}`, 'error');
-            }
-        }
-
-        // ==================== 数据加载 ====================
-        async function loadData() {
-            try {
-                updateConnectionStatus('loading', '正在加载数据...');
-
-                // 读取 OT record 表的剩余天数（第5行）
-                const remainingResponse = await gapi.client.sheets.spreadsheets.values.get({
-                    spreadsheetId: CONFIG.SPREADSHEET_ID,
-                    range: `'${CONFIG.SHEETS.OT_RECORD}'!B5:G5`,
-                });
-
-                const remainingDays = remainingResponse.result.values ? remainingResponse.result.values[0] : [];
-
-                // 读取加班记录（从第13行开始）
-                const recordsResponse = await gapi.client.sheets.spreadsheets.values.get({
-                    spreadsheetId: CONFIG.SPREADSHEET_ID,
-                    range: `'${CONFIG.SHEETS.OT_RECORD}'!A13:G200`,
-                });
-
-                const records = recordsResponse.result.values || [];
-
-                // 处理员工数据
-                employeeData = CONFIG.EMPLOYEES.map((emp, index) => {
-                    const remaining = parseFloat(remainingDays[index * 2] || 0);
-                    const employeeRecords = extractEmployeeRecords(records, index);
-
-                    return {
-                        name: emp.name,
-                        column: emp.column,
-                        remainingDays: remaining,
-                        latestOvertime: getLatestOvertime(employeeRecords),
-                        overtimeRecords: employeeRecords
-                    };
-                });
-
-                renderEmployeeCards();
-                populateEmployeeSelects();
-                updateConnectionStatus('connected', '已连接 Google Sheets');
-
-            } catch (error) {
-                console.error('加载数据失败:', error);
-                updateConnectionStatus('disconnected', '连接失败');
-                alert('加载数据失败: ' + error.message);
-            }
-        }
-
-        function extractEmployeeRecords(records, employeeIndex) {
-            const columnIndex = employeeIndex * 2 + 1; // B=1, D=3, F=5, H=7, J=9, L=11
-            const result = [];
-
-            records.forEach(row => {
-                if (row[0] && row[columnIndex]) {
-                    const date = row[0];
-                    const value = row[columnIndex];
-
-                    // 解析 AM/PM 记录
-                    if (value.includes('AM') || value.includes('PM')) {
-                        const parts = value.match(/(AM|PM)(\d{4}\/\d{1,2}\/\d{1,2})/g);
-                        if (parts) {
-                            parts.forEach(part => {
-                                const period = part.substring(0, 2);
-                                const overtimeDate = part.substring(2);
-                                result.push({
-                                    date: overtimeDate,
-                                    period: period,
-                                    duration: 0.5
-                                });
-                            });
-                        }
+            otRecords.forEach(ot => {
+                if (!isExpired(ot.date)) {
+                    const used = leaveRecords
+                        .filter(l => l.otRecordId === ot.id)
+                        .reduce((sum, l) => sum + l.duration, 0);
+                    const remaining = ot.duration - used;
+                    if (remaining > 0) {
+                        total += remaining;
+                        validRecords.push({...ot, remaining, used});
                     }
                 }
             });
 
-            return result;
+            return { total, validRecords };
         }
 
-        function getLatestOvertime(records) {
-            if (records.length === 0) return { date: '-', duration: 0 };
+        // 获取最近一次加班
+        function getLatestOT(employeeName) {
+            const otRecords = getData(STORAGE_KEYS.OT_RECORDS)
+                .filter(r => r.employee === employeeName)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            // 按日期排序，取最新的
-            const sorted = records.sort((a, b) => new Date(b.date) - new Date(a.date));
-            const latest = sorted[0];
+            if (otRecords.length === 0) return null;
 
-            // 计算同一天的总时长
-            const sameDay = records.filter(r => r.date === latest.date);
-            const totalDuration = sameDay.reduce((sum, r) => sum + r.duration, 0);
-
+            const latest = otRecords[0];
             return {
                 date: latest.date,
-                duration: totalDuration
+                duration: latest.duration
             };
         }
 
-        // ==================== UI 渲染 ====================
-        function renderEmployeeCards() {
+        // 刷新显示
+        function refreshData() {
+            const employees = getData(STORAGE_KEYS.EMPLOYEES);
             const grid = document.getElementById('employeeGrid');
             grid.innerHTML = '';
 
-            employeeData.forEach(emp => {
+            // 显示已有员工（最多10个）
+            for (let i = 0; i < 10; i++) {
                 const card = document.createElement('div');
-                card.className = 'employee-card';
 
-                let daysClass = 'days-none';
-                if (emp.remainingDays >= 2) daysClass = 'days-remaining';
-                else if (emp.remainingDays > 0) daysClass = 'days-low';
+                if (i < employees.length) {
+                    const employee = employees[i];
+                    const { total } = calculateRemainingDays(employee);
+                    const latest = getLatestOT(employee);
 
-                card.innerHTML = `
-                    <div class="employee-name">${emp.name}</div>
-                    <div class="employee-info">
-                        <div class="info-row">
-                            <span class="info-label">剩余假期</span>
-                            <span class="info-value ${daysClass}">${emp.remainingDays} 天</span>
+                    let valueClass = 'zero';
+                    if (total >= 2) valueClass = 'good';
+                    else if (total > 0) valueClass = 'warning';
+
+                    card.className = 'employee-card';
+                    card.innerHTML = `
+                        <div class="employee-name">${employee}</div>
+                        <div class="employee-info">
+                            <div class="info-label">剩余假期</div>
+                            <div class="info-value ${valueClass}">${total.toFixed(1)} 天</div>
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">最近加班</span>
-                            <span class="info-value">${emp.latestOvertime.date}</span>
+                        <div class="employee-info">
+                            <div class="info-label">最近加班</div>
+                            <div class="info-value">${latest ? `${latest.date} (${latest.duration}天)` : '暂无记录'}</div>
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">加班时长</span>
-                            <span class="info-value">${emp.latestOvertime.duration} 天</span>
-                        </div>
-                    </div>
-                `;
+                    `;
+                } else {
+                    card.className = 'employee-card empty';
+                    card.textContent = '空位';
+                }
 
                 grid.appendChild(card);
-            });
+            }
+
+            // 更新下拉列表
+            updateEmployeeSelects();
         }
 
-        function populateEmployeeSelects() {
-            const overtimeSelect = document.getElementById('overtimeEmployee');
-            const leaveSelect = document.getElementById('leaveEmployee');
+        // 更新员工下拉列表
+        function updateEmployeeSelects() {
+            const employees = getData(STORAGE_KEYS.EMPLOYEES);
+            const selects = ['otEmployee', 'leaveEmployee'];
 
-            [overtimeSelect, leaveSelect].forEach(select => {
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
                 select.innerHTML = '<option value="">请选择员工</option>';
-                employeeData.forEach((emp, index) => {
+                employees.forEach(emp => {
                     const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = emp.name;
+                    option.value = emp;
+                    option.textContent = emp;
                     select.appendChild(option);
                 });
             });
         }
 
-        function updateConnectionStatus(status, message) {
-            const statusDiv = document.getElementById('connectionStatus');
-            statusDiv.className = 'connection-status';
-
-            if (status === 'connected') {
-                statusDiv.classList.add('status-connected');
-                statusDiv.innerHTML = '<span>✅ ' + message + '</span>';
-            } else if (status === 'disconnected') {
-                statusDiv.classList.add('status-disconnected');
-                statusDiv.innerHTML = '<span>❌ ' + message + '</span>';
-            } else {
-                statusDiv.classList.add('status-loading');
-                statusDiv.innerHTML = '<span>⏳ ' + message + '</span>';
+        // 打开弹窗
+        function openAddEmployeeModal() {
+            const employees = getData(STORAGE_KEYS.EMPLOYEES);
+            if (employees.length >= 10) {
+                alert('已达到最大员工数量（10人）');
+                return;
             }
+            document.getElementById('employeeName').value = '';
+            document.getElementById('addEmployeeModal').classList.add('active');
         }
 
-        // ==================== 模态框控制 ====================
-        function showOvertimeModal() {
-            document.getElementById('overtimeModal').style.display = 'block';
-            document.getElementById('overtimeDate').valueAsDate = new Date();
+        function openAddOTModal() {
+            const employees = getData(STORAGE_KEYS.EMPLOYEES);
+            if (employees.length === 0) {
+                alert('请先添加员工');
+                return;
+            }
+            document.getElementById('otAM').checked = false;
+            document.getElementById('otPM').checked = false;
+            document.getElementById('addOTModal').classList.add('active');
         }
 
-        function showLeaveModal() {
-            document.getElementById('leaveModal').style.display = 'block';
-            document.getElementById('leaveDate').valueAsDate = new Date();
+        function openLeaveModal() {
+            const employees = getData(STORAGE_KEYS.EMPLOYEES);
+            if (employees.length === 0) {
+                alert('请先添加员工');
+                return;
+            }
+            document.getElementById('leaveAM').checked = false;
+            document.getElementById('leavePM').checked = false;
+            document.getElementById('otRecordsList').innerHTML = '';
+            document.getElementById('leaveModal').classList.add('active');
         }
 
+        // 关闭弹窗
         function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-
-            // 重置表单
-            if (modalId === 'overtimeModal') {
-                document.getElementById('overtimeForm').reset();
-            } else if (modalId === 'leaveModal') {
-                document.getElementById('leaveForm').reset();
-                document.getElementById('overtimeRecordsSection').classList.add('hidden');
-            }
+            document.getElementById(modalId).classList.remove('active');
         }
 
-        // 点击模态框外部关闭
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
-
-        // ==================== 加载员工加班记录 ====================
-        function loadEmployeeOvertimeRecords() {
-            const employeeIndex = document.getElementById('leaveEmployee').value;
-            if (!employeeIndex) {
-                document.getElementById('overtimeRecordsSection').classList.add('hidden');
+        // 添加员工
+        function addEmployee() {
+            const name = document.getElementById('employeeName').value.trim();
+            if (!name) {
+                alert('请输入员工姓名');
                 return;
             }
 
-            const employee = employeeData[employeeIndex];
-            const recordsList = document.getElementById('overtimeRecordsList');
-
-            if (employee.overtimeRecords.length === 0) {
-                recordsList.innerHTML = '<div class="empty-state">该员工暂无加班记录</div>';
-            } else {
-                recordsList.innerHTML = '';
-
-                employee.overtimeRecords.forEach(record => {
-                    const recordDiv = document.createElement('div');
-                    const overtimeDate = new Date(record.date);
-                    const expiryDate = new Date(overtimeDate);
-                    expiryDate.setMonth(expiryDate.getMonth() + 6);
-
-                    const today = new Date();
-                    const daysUntilExpiry = Math.floor((expiryDate - today) / (1000 * 60 * 60 * 24));
-
-                    let className = 'overtime-record';
-                    let statusText = '';
-
-                    if (daysUntilExpiry < 0) {
-                        className += ' expired';
-                        statusText = '已过期';
-                    } else if (daysUntilExpiry < 30) {
-                        className += ' expiring-soon';
-                        statusText = `${daysUntilExpiry} 天后过期`;
-                    } else {
-                        statusText = `${daysUntilExpiry} 天后过期`;
-                    }
-
-                    recordDiv.className = className;
-                    recordDiv.innerHTML = `
-                        <div class="record-date">${record.date} (${record.period})</div>
-                        <div class="record-info">时长: ${record.duration} 天 | ${statusText} | 到期日: ${expiryDate.toLocaleDateString()}</div>
-                    `;
-
-                    recordsList.appendChild(recordDiv);
-                });
+            const employees = getData(STORAGE_KEYS.EMPLOYEES);
+            if (employees.includes(name)) {
+                alert('该员工已存在');
+                return;
             }
 
-            document.getElementById('overtimeRecordsSection').classList.remove('hidden');
+            if (employees.length >= 10) {
+                alert('已达到最大员工数量（10人）');
+                return;
+            }
+
+            employees.push(name);
+            saveData(STORAGE_KEYS.EMPLOYEES, employees);
+            closeModal('addEmployeeModal');
+            refreshData();
+            alert('员工添加成功！');
         }
 
-        // ==================== 表单提交处理 ====================
-        async function handleOvertimeSubmit(e) {
-            e.preventDefault();
+        // 添加加班记录
+        function addOT() {
+            const employee = document.getElementById('otEmployee').value;
+            const date = document.getElementById('otDate').value;
+            const am = document.getElementById('otAM').checked;
+            const pm = document.getElementById('otPM').checked;
 
-            const employeeIndex = document.getElementById('overtimeEmployee').value;
-            const date = document.getElementById('overtimeDate').value;
-            const isAM = document.getElementById('overtimeAM').checked;
-            const isPM = document.getElementById('overtimePM').checked;
-
-            if (!isAM && !isPM) {
-                alert('请至少选择一个时段');
+            if (!employee) {
+                alert('请选择员工');
+                return;
+            }
+            if (!date) {
+                alert('请选择加班日期');
+                return;
+            }
+            if (!am && !pm) {
+                alert('请选择加班时长');
                 return;
             }
 
-            try {
-                const employee = employeeData[employeeIndex];
+            const duration = (am ? 0.5 : 0) + (pm ? 0.5 : 0);
+            const otRecords = getData(STORAGE_KEYS.OT_RECORDS);
 
-                // 格式化日期为 YYYY/M/D
-                const dateObj = new Date(date);
-                const formattedDate = `${dateObj.getFullYear()}/${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+            otRecords.push({
+                id: Date.now(),
+                employee,
+                date,
+                duration,
+                periods: { am, pm }
+            });
 
-                // 构建记录值
-                let recordValue = '';
-                if (isAM) recordValue += `AM${formattedDate}`;
-                if (isPM) recordValue += (recordValue ? '
-' : '') + `PM${formattedDate}`;
-
-                // 找到第一个空行
-                const response = await gapi.client.sheets.spreadsheets.values.get({
-                    spreadsheetId: CONFIG.SPREADSHEET_ID,
-                    range: `'${CONFIG.SHEETS.OT_RECORD}'!A13:A200`,
-                });
-
-                const existingDates = response.result.values || [];
-                const nextRow = 13 + existingDates.length;
-
-                // 写入数据
-                await gapi.client.sheets.spreadsheets.values.update({
-                    spreadsheetId: CONFIG.SPREADSHEET_ID,
-                    range: `'${CONFIG.SHEETS.OT_RECORD}'!A${nextRow}:${employee.column}${nextRow}`,
-                    valueInputOption: 'USER_ENTERED',
-                    resource: {
-                        values: [[formattedDate, ...(employee.column === 'B' ? [recordValue] : 
-                                Array(parseInt(employee.column.charCodeAt(0) - 66)).fill('').concat([recordValue]))]]
-                    }
-                });
-
-                alert('加班记录已成功录入！');
-                closeModal('overtimeModal');
-                await loadData();
-
-            } catch (error) {
-                console.error('录入失败:', error);
-                alert('录入失败: ' + error.message);
-            }
+            saveData(STORAGE_KEYS.OT_RECORDS, otRecords);
+            closeModal('addOTModal');
+            refreshData();
+            alert(`加班录入成功！\n员工：${employee}\n日期：${date}\n时长：${duration}天`);
         }
 
-        async function handleLeaveSubmit(e) {
-            e.preventDefault();
+        // 加载员工加班记录
+        function loadEmployeeOTRecords() {
+            const employeeName = document.getElementById('leaveEmployee').value;
+            const container = document.getElementById('otRecordsList');
 
-            const employeeIndex = document.getElementById('leaveEmployee').value;
-            const date = document.getElementById('leaveDate').value;
-            const isAM = document.getElementById('leaveAM').checked;
-            const isPM = document.getElementById('leavePM').checked;
-            const remark = document.getElementById('leaveRemark').value;
-
-            if (!isAM && !isPM) {
-                alert('请至少选择一个时段');
+            if (!employeeName) {
+                container.innerHTML = '';
                 return;
             }
 
-            const leaveDays = (isAM ? 0.5 : 0) + (isPM ? 0.5 : 0);
-            const employee = employeeData[employeeIndex];
+            const { total, validRecords } = calculateRemainingDays(employeeName);
 
-            if (employee.remainingDays < leaveDays) {
-                alert(`假期余额不足！当前剩余: ${employee.remainingDays} 天`);
+            if (validRecords.length === 0) {
+                container.innerHTML = '<div class="no-records">该员工暂无可用加班记录</div>';
                 return;
             }
 
-            try {
-                // 格式化日期为 M/D/YYYY
-                const dateObj = new Date(date);
-                const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
+            // 按到期日期排序（最快过期的在前）
+            validRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-                // 构建时段值
-                let periodValue = '';
-                if (isAM) periodValue += 'AM';
-                if (isPM) periodValue += (periodValue ? '
-' : '') + 'PM';
+            let html = `<div class="form-group">
+                <label class="form-label">可用加班记录（剩余总计：${total.toFixed(1)}天）</label>`;
 
-                // 找到第一个空行
-                const response = await gapi.client.sheets.spreadsheets.values.get({
-                    spreadsheetId: CONFIG.SPREADSHEET_ID,
-                    range: `'${CONFIG.SHEETS.COMPENSATORY}'!A1:A200`,
-                });
+            validRecords.forEach(record => {
+                const expiryDate = getExpiryDate(new Date(record.date));
+                const daysUntilExpiry = daysBetween(new Date(), expiryDate);
 
-                const existingDates = response.result.values || [];
-                const nextRow = existingDates.length + 1;
+                let statusClass = 'valid';
+                let statusText = '有效';
 
-                // 准备写入的数据
-                const columnOffset = parseInt(employee.column.charCodeAt(0) - 66);
-                const rowData = [formattedDate];
-
-                // 填充到对应列
-                for (let i = 0; i < columnOffset; i++) {
-                    rowData.push('');
+                if (isExpiringSoon(record.date)) {
+                    statusClass = 'expiring';
+                    statusText = `${daysUntilExpiry}天后过期`;
                 }
-                rowData.push(periodValue);
-                rowData.push(remark || '');
 
-                // 写入数据
-                await gapi.client.sheets.spreadsheets.values.update({
-                    spreadsheetId: CONFIG.SPREADSHEET_ID,
-                    range: `'${CONFIG.SHEETS.COMPENSATORY}'!A${nextRow}`,
-                    valueInputOption: 'USER_ENTERED',
-                    resource: {
-                        values: [rowData]
-                    }
+                const recordClass = statusClass === 'expiring' ? 'expiring-soon' : '';
+
+                html += `
+                    <div class="ot-record ${recordClass}">
+                        <div class="ot-record-header">
+                            <span class="ot-record-date">${record.date}</span>
+                            <span class="ot-record-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="ot-record-info">
+                            原始：${record.duration}天 | 已用：${record.used}天 | 剩余：${record.remaining}天
+                        </div>
+                        <div class="ot-record-info" style="font-size: 0.85em; color: #999;">
+                            过期日期：${expiryDate.toLocaleDateString('zh-CN')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // 申请调休
+        function applyLeave() {
+            const employee = document.getElementById('leaveEmployee').value;
+            const date = document.getElementById('leaveDate').value;
+            const am = document.getElementById('leaveAM').checked;
+            const pm = document.getElementById('leavePM').checked;
+
+            if (!employee) {
+                alert('请选择员工');
+                return;
+            }
+            if (!date) {
+                alert('请选择调休日期');
+                return;
+            }
+            if (!am && !pm) {
+                alert('请选择调休时长');
+                return;
+            }
+
+            const duration = (am ? 0.5 : 0) + (pm ? 0.5 : 0);
+            const { total, validRecords } = calculateRemainingDays(employee);
+
+            if (total < duration) {
+                alert(`假期不足！\n需要：${duration}天\n可用：${total.toFixed(1)}天`);
+                return;
+            }
+
+            // 按日期排序，优先使用最快过期的
+            validRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const leaveRecords = getData(STORAGE_KEYS.LEAVE_RECORDS);
+            let remaining = duration;
+
+            for (const record of validRecords) {
+                if (remaining <= 0) break;
+
+                const toUse = Math.min(remaining, record.remaining);
+                leaveRecords.push({
+                    id: Date.now() + Math.random(),
+                    employee,
+                    date,
+                    duration: toUse,
+                    otRecordId: record.id,
+                    periods: { am, pm }
                 });
 
-                alert('调休申请已成功提交！');
-                closeModal('leaveModal');
-                await loadData();
-
-            } catch (error) {
-                console.error('提交失败:', error);
-                alert('提交失败: ' + error.message);
+                remaining -= toUse;
             }
+
+            saveData(STORAGE_KEYS.LEAVE_RECORDS, leaveRecords);
+            closeModal('leaveModal');
+            refreshData();
+            alert(`调休申请成功！\n员工：${employee}\n日期：${date}\n时长：${duration}天`);
         }
 
-        // ==================== 刷新数据 ====================
-        async function refreshData() {
-            await loadData();
-            alert('数据已刷新！');
+        // 清空所有数据
+        function clearAllData() {
+            if (!confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+                return;
+            }
+
+            if (!confirm('再次确认：真的要删除所有员工、加班和调休记录吗？')) {
+                return;
+            }
+
+            localStorage.removeItem(STORAGE_KEYS.EMPLOYEES);
+            localStorage.removeItem(STORAGE_KEYS.OT_RECORDS);
+            localStorage.removeItem(STORAGE_KEYS.LEAVE_RECORDS);
+
+            refreshData();
+            alert('所有数据已清空！');
         }
+
+        // 点击弹窗外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
