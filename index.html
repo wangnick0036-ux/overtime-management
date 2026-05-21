@@ -1207,8 +1207,7 @@
                 // 构建时段值
                 let periodValue = '';
                 if (isAM) periodValue += 'AM';
-                if (isPM) periodValue += (periodValue ? '
-' : '') + 'PM';
+                if (isPM) periodValue += (periodValue ? '\n' : '') + 'PM';
 
                 // 找到第一个空行
                 const response = await gapi.client.sheets.spreadsheets.values.get({
