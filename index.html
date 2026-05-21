@@ -1145,8 +1145,7 @@
                 // 构建记录值
                 let recordValue = '';
                 if (isAM) recordValue += `AM${formattedDate}`;
-                if (isPM) recordValue += (recordValue ? '
-' : '') + `PM${formattedDate}`;
+                if (isPM) recordValue += (recordValue ? ' ' : '') + `PM${formattedDate}`;
 
                 // 找到第一个空行
                 const response = await gapi.client.sheets.spreadsheets.values.get({
