@@ -1122,11 +1122,14 @@
                     return;
                 }
 
-                // 构建单元格值（格式：AM2025/5/20 或 PM2025/5/20 或 AM2025/5/20
-PM2025/5/20）
-                const cellValue = periods.map(p => `${p}${formattedDate}`).join('
-');
+                // 构建单元格值 (格式: AM2025/5/20 或 PM2025/5/20 或 AM2025/5/20 或 PM2025/5/20)
+                const cellValue = periods.map(p => `${p}${formattedDate}`).join('\n');
 
+                // 查找要写入的行 (找到第一个空行或追加新行)
+                const response = await gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: CONFIG.SPREADSHEET_ID,
+                range: 'OT record!A13:A200',
+});
                 // 查找要写入的行（找到第一个空行或追加新行）
                 const response = await gapi.client.sheets.spreadsheets.values.get({
                     spreadsheetId: CONFIG.SPREADSHEET_ID,
